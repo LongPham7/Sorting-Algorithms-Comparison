@@ -1,6 +1,6 @@
 public class SortAlgorithmsComparison {
 	
-	private AppFrame app;
+	private AppFrame app = new AppFrame();
 
 	public static void main(String[] args) {
 		SortAlgorithmsComparison gui = new SortAlgorithmsComparison();
@@ -8,7 +8,6 @@ public class SortAlgorithmsComparison {
 	}
 	
 	public void activate() {
-		app = new AppFrame();
 		app.activate();
 	}
 }
