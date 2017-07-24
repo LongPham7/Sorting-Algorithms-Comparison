@@ -1,10 +1,22 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 
 import javax.swing.*;
 
+/**
+ * This class corresponds to a view in the MVC architecture, creating the main
+ * frame where users can interact with the application. The users first input
+ * parameters necessary for the discrete logistic growth model to generate an
+ * unsorted sequence of integers. They can then click a button to sort the
+ * sequence using three sorting algorithms: mergesort, selection sort, and
+ * insertion sort. These algorithms are applied to subsequences of varying
+ * length, and their execution time is measured. Finally, a graph comparing
+ * performance of the three algorithms with respect to the running time is
+ * displayed to the users.
+ */
 public class AppFrame {
-	
+
 	JFrame frame1;
 
 	JPanel panel1;
@@ -28,23 +40,24 @@ public class AppFrame {
 	JButton button;
 
 	GridBagConstraints c;
-	
+
 	private GraphFrame graph = new GraphFrame();
 	private int[] populations;
-	
+
 	private Mergesort mergesort = new Mergesort();
 	private SelectionSort selectionsort = new SelectionSort();
 	private InsertionSort insertionsort = new InsertionSort();
-	
+
+	// Creates GUI components for the main frame.
 	public void activate() {
 		frame1 = new JFrame("Sorting Algorithms");
 		panel1 = new JPanel();
 		panel2 = new JPanel();
-		label1 = new JLabel("Generating Chaotic Sequence by Logistic Growth");
-		label2 = new JLabel("The initial population: P=");
-		label3 = new JLabel("The number of generations: k=");
-		label4 = new JLabel("The reproductive rate: r=");
-		label5 = new JLabel("The carrying capacity: CC=");
+		label1 = new JLabel("Generating integers by discrete logistic growth");
+		label2 = new JLabel("Initial population: P=");
+		label3 = new JLabel("Number of generations: k=");
+		label4 = new JLabel("Reproductive rate: r=");
+		label5 = new JLabel("Carrying capacity: CC=");
 		label6 = new JLabel("Unsorted sequence:");
 		label7 = new JLabel("Sorted sequence:");
 
@@ -77,7 +90,7 @@ public class AppFrame {
 		panelAddComponent(label6, panel2, 0, 1, 1);
 		panelAddComponent(field5, panel2, 1, 1, 1);
 		panelAddComponent(label7, panel2, 0, 2, 1);
-		panelAddComponent(field6, panel2, 1, 2, 1);		
+		panelAddComponent(field6, panel2, 1, 2, 1);
 
 		button.addActionListener(new buttonListener());
 
@@ -85,7 +98,7 @@ public class AppFrame {
 		frame1.setSize(450, 300);
 		frame1.setVisible(true);
 	}
-	
+
 	private void panelAddComponent(Component component, JPanel panel, int x, int y, int width) {
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = x;
@@ -93,11 +106,13 @@ public class AppFrame {
 		c.gridwidth = width;
 		panel.add(component, c);
 	}
-	
+
+	// Generates an unsorted sequence of populations using the discrete
+	// logistic model with the user-defined parameters.
 	private void generatePopulations() {
 		// Initial population
 		int p = Integer.parseInt(field1.getText());
-		// The number of generations
+		// Number of generations
 		int k = Integer.parseInt(field2.getText());
 		// Carrying capacity
 		int cc = Integer.parseInt(field4.getText());
@@ -116,60 +131,71 @@ public class AppFrame {
 		}
 	}
 
+	// Action listener for a button to sort an input sequence and to display a graph
 	class buttonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			try {
 				generatePopulations();
-				automaticSorting();
+				displaySequences();
+				measureTime();
 				graph.activate();
 			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(null, "There is an error.", "Error Message", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Error", "Error Message", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
 
-	private int[] setList(int n) {
-		int[] result = new int[n];
-		for (int i = 0; i != n; i++) {
-			result[i] = populations[i];
-		}
+	// Displays an unsorted and a sorted sequences.
+	private void displaySequences() {
+		int[] copy = copyList(populations.length);
+		field5.setText(Arrays.toString(copy));
+		mergesort.sort(copy);
+		field6.setText(Arrays.toString(copy));
+	}
+
+	// Creates a new copy of the unsorted input sequence.
+	private int[] copyList(int len) {
+		int[] result = new int[len];
+		System.arraycopy(populations, 0, result, 0, len);
 		return result;
 	}
 
-	private void automaticSorting() {
+	// Measures running time of sorting and sends the data to an object of
+	// GraphFrame.
+	private void measureTime() {
 		double interval = 1.0;
 		long start;
 		long end;
 		int length = 0;
 		int maxlength = 100;
-		
+
 		if (populations.length > 100) {
 			interval = (double) populations.length / 100;
 		} else {
 			maxlength = populations.length;
 		}
-		
+
 		DataPoint[] merge = new DataPoint[maxlength];
 		DataPoint[] selection = new DataPoint[maxlength];
 		DataPoint[] insertion = new DataPoint[maxlength];
 
-		for (int i = 1; i <= maxlength; i++) {
-			length = (int) Math.round(interval * i);
+		for (int i = 0; i != maxlength; i++) {
+			length = (int) Math.round(interval * (i + 1));
 
 			start = System.nanoTime();
-			mergesort.sort(setList(length));
+			mergesort.sort(copyList(length));
 			end = System.nanoTime();
-			merge[i-1] = new DataPoint(length, end - start);
+			merge[i] = new DataPoint(length, end - start);
 
 			start = System.nanoTime();
-			selectionsort.sort(setList(length));
+			selectionsort.sort(copyList(length));
 			end = System.nanoTime();
-			selection[i-1] = new DataPoint(length, end - start);
-			
+			selection[i] = new DataPoint(length, end - start);
+
 			start = System.nanoTime();
-			insertionsort.sort(setList(length));
+			insertionsort.sort(copyList(length));
 			end = System.nanoTime();
-			insertion[i-1] = new DataPoint(length, end - start);
+			insertion[i] = new DataPoint(length, end - start);
 		}
 		graph.setData(merge, selection, insertion);
 	}

@@ -1,3 +1,6 @@
+/** 
+ * Entry point to this application
+ * */
 public class SortAlgorithmsComparison {
 	
 	private AppFrame app = new AppFrame();

@@ -1,4 +1,6 @@
-
+/** 
+ * This class implements selection sort. 
+ * */
 public class SelectionSort implements Sorting {
 
 	public void sort(int[] data) {
@@ -9,10 +11,10 @@ public class SelectionSort implements Sorting {
 		for (int i = 0; i != len; i++) {
 			min = data[i];
 			index = i;
-			for (int e = i + 1; e != len; e++) {
-				if (data[e] < min) {
-					min = data[e];
-					index = e;
+			for (int j = i + 1; j != len; j++) {
+				if (data[j] < min) {
+					min = data[j];
+					index = j;
 				}
 			}
 			if (index != i) {
