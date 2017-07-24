@@ -81,8 +81,6 @@ public class AppFrame {
 		frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame1.setSize(450, 300);
 		frame1.setVisible(true);
-		
-		graph.activate();
 	}
 	
 	private void panelAddComponent(Component component, JPanel panel, int x, int y, int width) {
@@ -118,10 +116,9 @@ public class AppFrame {
 	class button4Listener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			try {
-				graph.clearList();
 				makeList();
 				automaticSorting();
-				graph.frame.setVisible(true);
+				graph.activate();
 			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(null, "There is an error.", "Error Message", JOptionPane.ERROR_MESSAGE);
 			}
@@ -204,7 +201,6 @@ public class AppFrame {
 				n[i] = min;
 				n[index] = auxiliaryMemory;
 			}
-
 		}
 	}
 
@@ -240,11 +236,16 @@ public class AppFrame {
 		long end;
 		int length = 0;
 		int maxlength = 100;
+		
 		if (list.length > 100) {
 			interval = (double) list.length / 100;
 		} else {
 			maxlength = list.length;
 		}
+		
+		DataPoint[] merge = new DataPoint[maxlength];
+		DataPoint[] selection = new DataPoint[maxlength];
+		DataPoint[] insertion = new DataPoint[maxlength];
 
 		for (int i = 1; i <= maxlength; i++) {
 			length = (int) Math.round(interval * i);
@@ -252,20 +253,18 @@ public class AppFrame {
 			start = System.nanoTime();
 			insertionSort(setList(length));
 			end = System.nanoTime();
-			graph.addX3(length);
-			graph.addY3(end - start);
+			insertion[i-1] = new DataPoint(length, end - start);
 
 			start = System.nanoTime();
 			mergeSort(setList(length));
 			end = System.nanoTime();
-			graph.addX1(length);
-			graph.addY1(end - start);
+			merge[i-1] = new DataPoint(length, end - start);
 
 			start = System.nanoTime();
 			selectionSort(setList(length));
 			end = System.nanoTime();
-			graph.addX2(length);
-			graph.addY2(end - start);
+			selection[i-1] = new DataPoint(length, end - start);
 		}
+		graph.setData(merge, selection, insertion);
 	}
 }
