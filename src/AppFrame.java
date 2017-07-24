@@ -39,8 +39,6 @@ public class AppFrame {
 
 	JButton button;
 
-	GridBagConstraints c;
-
 	private GraphFrame graph = new GraphFrame();
 	private int[] populations;
 
@@ -73,7 +71,6 @@ public class AppFrame {
 		frame1.getContentPane().add(BorderLayout.NORTH, panel1);
 		frame1.getContentPane().add(BorderLayout.CENTER, panel2);
 
-		c = new GridBagConstraints();
 		panel1.setLayout(new GridBagLayout());
 		panelAddComponent(label1, panel1, 0, 0, 2);
 		panelAddComponent(label2, panel1, 0, 1, 1);
@@ -100,6 +97,7 @@ public class AppFrame {
 	}
 
 	private void panelAddComponent(Component component, JPanel panel, int x, int y, int width) {
+		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = x;
 		c.gridy = y;
